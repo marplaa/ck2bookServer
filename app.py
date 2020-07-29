@@ -7,6 +7,7 @@ from pip._vendor import urllib3
 from flask import request
 import wget
 from pathlib import Path
+from zipfile import ZipFile
 
 app = Flask(__name__)
 
@@ -92,11 +93,12 @@ def getImages(url):
 @app.route('/compile/toPdf', methods=['POST'])
 def create_tex_file():
     data = request.get_json()
-    directory = hashlib.md5(bytearray(data['content'], encoding="utf-8")).hexdigest()
+    directory_name = hashlib.md5(bytearray(data['content'], encoding="utf-8")).hexdigest()
+    directory_path = Path('temp') / Path(directory_name)
 
     try:
-        Path(directory).mkdir()
-        Path(directory + '/images').mkdir()
+        directory_path.mkdir()
+        (directory_path / 'images').mkdir()
 
     except FileExistsError:
         pass
@@ -104,14 +106,28 @@ def create_tex_file():
     print(Path('/book.txt'))
     print()
 
-    f = open(Path(directory) / 'book.tex', "w", encoding='utf-8')
+    f = open(directory_path / 'book.tex', "w", encoding='utf-8')
     f.write(data['content'])
     f.close()
 
-    download_images(data['images'], Path(directory) / 'images')
+    download_images(data['images'], directory_path / 'images')
 
-    print(data)
-    return {'url': 'ggsdfdsfsdfsdf'}
+    make_zip(str(directory_path), directory_name)
+
+    # print(data)
+    return {'url': request.base_url + '/static/' + directory_name + '.zip'}
+
+
+def make_zip(directory_path, name):
+    # create a ZipFile object
+    zip_obj = ZipFile(Path(Path('static') / Path('books') / (name + '.zip')), 'w')
+    # Add multiple files to the zip
+    for dirname, subdirs, files in os.walk(directory_path):
+        zip_obj.write(dirname)
+        for filename in files:
+            zip_obj.write(os.path.join(dirname, filename))
+    # close the Zip File
+    zip_obj.close()
 
 
 def download_images(images, path):
