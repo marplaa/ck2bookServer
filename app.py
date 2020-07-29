@@ -118,10 +118,14 @@ def create_tex_file():
     # make_zip(str(directory_path), file_id)
 
     if compile_latex(directory_path, file_id):
-        move(str(directory_path) / Path(file_id + '.pdf'), Path('static/books') / (file_id + '.pdf'))
+        try:
+            move(str(directory_path) / Path(file_id + '.pdf'), Path('static/books') / (file_id + '.pdf'))
+        except:
+            pass
+
 
     # print(data)
-    return {'url': request.base_url + '/static/' + file_id + '.zip'}
+    return {'url': request.url_root + 'static/books/' + file_id + '.pdf'}
 
 
 def compile_latex(directory, file_id):
@@ -145,9 +149,9 @@ def make_zip(directory_path, name):
 
 def download_images(images, path):
     for image in images:
-        name = hashlib.md5(bytearray(image, encoding="ascii")).hexdigest() + '.jpg'
+        name = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest() + '.jpg'
         print(path / name)
-        wget.download(image, out=str(path / name))
+        wget.download(image[0], out=str(path / name))
 
 
 def makelist(table):
