@@ -1,18 +1,24 @@
 import hashlib
 import os
 import re
+import subprocess
+import urllib3
 from bs4 import BeautifulSoup
 from flask import Flask, jsonify
-from pip._vendor import urllib3
 from flask import request
 import wget
 from pathlib import Path
 from zipfile import ZipFile
+from shutil import move
+
 
 app = Flask(__name__)
 
 if __name__ == '__main__':
     app.run()
+
+
+progresses = []
 
 
 @app.route('/get/get_recipe_data_json_get', methods=['GET'])
@@ -93,8 +99,8 @@ def getImages(url):
 @app.route('/compile/toPdf', methods=['POST'])
 def create_tex_file():
     data = request.get_json()
-    directory_name = hashlib.md5(bytearray(data['content'], encoding="utf-8")).hexdigest()
-    directory_path = Path('temp') / Path(directory_name)
+    file_id = hashlib.md5(bytearray(data['content'], encoding="utf-8")).hexdigest()
+    directory_path = Path('temp') / Path(file_id)
 
     try:
         directory_path.mkdir()
@@ -103,19 +109,26 @@ def create_tex_file():
     except FileExistsError:
         pass
 
-    print(Path('/book.txt'))
-    print()
-
-    f = open(directory_path / 'book.tex', "w", encoding='utf-8')
+    f = open(directory_path / (file_id + '.tex'), "w", encoding='utf-8')
     f.write(data['content'])
     f.close()
 
     download_images(data['images'], directory_path / 'images')
 
-    make_zip(str(directory_path), directory_name)
+    # make_zip(str(directory_path), file_id)
+
+    if compile_latex(directory_path, file_id):
+        move(str(directory_path) / Path(file_id + '.pdf'), Path('static/books') / (file_id + '.pdf'))
 
     # print(data)
-    return {'url': request.base_url + '/static/' + directory_name + '.zip'}
+    return {'url': request.base_url + '/static/' + file_id + '.zip'}
+
+
+def compile_latex(directory, file_id):
+
+    sp = subprocess.run(["pdflatex", file_id + '.tex'], cwd=str(directory))
+    print(sp.returncode)
+    return not sp.returncode
 
 
 def make_zip(directory_path, name):
