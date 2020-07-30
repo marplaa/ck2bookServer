@@ -10,6 +10,7 @@ import wget
 from pathlib import Path
 from zipfile import ZipFile
 from shutil import move
+from PIL import Image
 
 
 app = Flask(__name__)
@@ -88,7 +89,9 @@ def getImages(url):
     # print(images)
 
     for img in images:
-        img_list.append(img.get('src'))
+        image = re.sub(r'/crop-[0-9x]*/', '/crop-960x640/', img.get('src'))
+        print(image)
+        img_list.append(image)
 
     print(len(img_list))
     # download_images(img_list)
@@ -149,9 +152,22 @@ def make_zip(directory_path, name):
 
 def download_images(images, path):
     for image in images:
-        name = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest() + '.jpg'
+        orig_name = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest() + '.jpg'
+        wget.download(image[0], out=str(path / orig_name))
+        for res in image[1]:
+            name = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest() + '-' + res + '.jpg'
+
+            img = Image.open(str(path / orig_name))
+            basewidth = int(res.split('x')[0])
+            print(basewidth)
+            wpercent = (basewidth / float(img.size[0]))
+            hsize = int((float(img.size[1]) * float(wpercent)))
+            img = img.resize((basewidth, hsize), Image.ANTIALIAS)
+            img.save('sompic.jpg')
+
+
         print(path / name)
-        wget.download(image[0], out=str(path / name))
+
 
 
 def makelist(table):
