@@ -10,8 +10,7 @@ import wget
 from pathlib import Path
 from zipfile import ZipFile
 from shutil import move
-from PIL import Image
-
+from PIL import Image, ImageFilter
 
 app = Flask(__name__)
 
@@ -152,23 +151,49 @@ def make_zip(directory_path, name):
 
 def download_images(images, path):
     for image in images:
-        orig_name = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest() + '.jpg'
+        hash = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest()
+        orig_name = hash + '.jpg'
         wget.download(image[0], out=str(path / orig_name))
+
+        # iterate through all resolutions per picture
         for res in image[1]:
-            name = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest() + '-' + res + '.jpg'
+            # name = hash + '-' + res + '.jpg'
 
-            img = Image.open(str(path / orig_name))
-            basewidth = int(res.split('x')[0])
-            print(basewidth)
-            wpercent = (basewidth / float(img.size[0]))
-            hsize = int((float(img.size[1]) * float(wpercent)))
-            img = img.resize((basewidth, hsize), Image.ANTIALIAS)
-            img.save('sompic.jpg')
+            resolution = int(res.split('x')[0]), int(res.split('x')[1])
+            crop_image(path, hash, resolution)
 
 
-        print(path / name)
+        # print(path / name)
 
 
+def crop_image(path, name, size):
+
+    img = Image.open(str(path / (name + '.jpg')))
+    ar_orig = img.size[0] / img.size[1]
+    ar_crop = size[0] / size[1]
+
+    # orig_width = crop_width
+    if ar_orig < ar_crop:
+        crop_height = int(img.size[0] / ar_crop)
+        upper_left = int((img.size[1] - crop_height) / 2)
+        box = (0, upper_left, img.size[0], crop_height + upper_left)
+    else:
+        crop_width = int(img.size[1] * ar_crop)
+        upper_left = int((img.size[0] - crop_width) / 2)
+        box = (upper_left, 0, crop_width + upper_left, img.size[1])
+
+    cropped_img = img.crop(box)
+
+    # resize
+    basewidth = size[0]
+    print(basewidth)
+    wpercent = (basewidth / float(cropped_img.size[0]))
+    hsize = int((float(cropped_img.size[1]) * float(wpercent)))
+    resized_img = cropped_img.resize((basewidth, hsize), Image.ANTIALIAS)
+
+    blurred_img = resized_img.filter(ImageFilter.GaussianBlur(10))
+
+    blurred_img.save(str(path / (name + '-' + str(size[0]) + 'x' + str(size[1]) + '.jpg')))
 
 def makelist(table):
     result = []
