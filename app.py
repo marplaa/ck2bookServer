@@ -151,22 +151,22 @@ def make_zip(directory_path, name):
 
 def download_images(images, path):
     for image in images:
-        hash = hashlib.md5(bytearray(image[0], encoding="ascii")).hexdigest()
+        hash = hashlib.md5(bytearray(image['url'], encoding="ascii")).hexdigest()
         orig_name = hash + '.jpg'
-        wget.download(image[0], out=str(path / orig_name))
+        wget.download(image['url'], out=str(path / orig_name))
 
         # iterate through all resolutions per picture
-        for res in image[1]:
+        for size in image['sizes']:
             # name = hash + '-' + res + '.jpg'
 
-            resolution = int(res.split('x')[0]), int(res.split('x')[1])
-            crop_image(path, hash, resolution)
+            resolution = int(size['size'].split('x')[0]), int(size['size'].split('x')[1])
+            crop_image(path, hash, resolution, size['filter'])
 
 
         # print(path / name)
 
 
-def crop_image(path, name, size):
+def crop_image(path, name, size, filter):
 
     img = Image.open(str(path / (name + '.jpg')))
     ar_orig = img.size[0] / img.size[1]
@@ -192,6 +192,8 @@ def crop_image(path, name, size):
     resized_img = cropped_img.resize((basewidth, hsize), Image.ANTIALIAS)
 
     blurred_img = resized_img.filter(ImageFilter.GaussianBlur(10))
+
+    # apply filters here
 
     blurred_img.save(str(path / (name + '-' + str(size[0]) + 'x' + str(size[1]) + '.jpg')))
 
