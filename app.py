@@ -204,17 +204,23 @@ def crop_image(path, name, size, filter):
 def makelist(table):
     result = []
 
-    allrows = table.findAll('tr')
-    for row in allrows:
-        result.append([])
+    rows = table.findAll('tr')
+    for row in rows:
+        new_row = []
         allcols = row.findAll('td')
         for col in allcols:
+            empty = True;
             thestrings = []
 
             for thestring in col.stripped_strings:
                 thestring = re.sub(r'\s+', ' ', thestring)
 
                 thestrings.append(thestring)
+                if not thestring.split() == '':
+                    empty = False
             thetext = ''.join(thestrings)
-            result[-1].append(thetext)
+            new_row.append(thetext)
+        # check if row would be empty
+        if not empty:
+            result.append(new_row)
     return result
