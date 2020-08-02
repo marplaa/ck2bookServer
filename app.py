@@ -195,9 +195,11 @@ def crop_image(path, name, size, filter):
     for f in filter:
 
         if f == 'blur':
-            image = image.filter(ImageFilter.GaussianBlur(filter[f]))
+            image = image.filter(ImageFilter.GaussianBlur(float(filter[f])))
         elif f == 'brightness':
             image = ImageEnhance.Brightness(image).enhance(float(filter[f]))
+        elif f == 'color':
+            image = ImageEnhance.Color(image).enhance(float(filter[f]))
 
     image.save(str(path / (name + '-' + str(size[0]) + 'x' + str(size[1]) + '.jpg')))
 
