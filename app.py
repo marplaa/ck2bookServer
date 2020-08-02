@@ -188,7 +188,7 @@ def crop_image(path, name, size, filter):
     cropped_img = img.crop(box)
 
     # resize
-   
+
     image = cropped_img.resize((size[0], size[1]), Image.ANTIALIAS)
 
     # apply filters here
@@ -210,10 +210,10 @@ def makelist(table):
         allcols = row.findAll('td')
         for col in allcols:
             thestrings = []
-            thestring = ""
+
             for thestring in col.stripped_strings:
                 thestring = re.sub(r'\s+', ' ', thestring)
-                # thestring = thestring.replace('\n', '')
+
                 thestrings.append(thestring)
             thetext = ''.join(thestrings)
             result[-1].append(thetext)
