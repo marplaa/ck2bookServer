@@ -154,6 +154,7 @@ def download_images(images, path):
     for image in images:
         hash = hashlib.md5(bytearray(image['url'], encoding="ascii")).hexdigest()
         orig_name = hash + '.jpg'
+        print('downloading:', image['url'])
         wget.download(image['url'], out=str(path / orig_name))
 
         # iterate through all resolutions per picture
@@ -192,16 +193,21 @@ def crop_image(path, name, size, filter):
     image = cropped_img.resize((size[0], size[1]), Image.ANTIALIAS)
 
     # apply filters here
+    filtered = ''
     for f in filter:
 
         if f == 'blur':
             image = image.filter(ImageFilter.GaussianBlur(float(filter[f])))
+            filtered = '-f'
         elif f == 'brightness':
             image = ImageEnhance.Brightness(image).enhance(float(filter[f]))
+            filtered = '-f'
         elif f == 'color':
             image = ImageEnhance.Color(image).enhance(float(filter[f]))
+            filtered = '-f'
 
-    image.save(str(path / (name + '-' + str(size[0]) + 'x' + str(size[1]) + '.jpg')))
+    image.save(str(path / (name + '-' + str(size[0]) + 'x' + str(size[1]) + filtered + '.jpg')))
+
 
 def makelist(table):
     result = []
