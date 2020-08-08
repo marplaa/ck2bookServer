@@ -165,9 +165,6 @@ def download_images(images, path):
             crop_image(path, hash, resolution, size['filter'])
 
 
-        # print(path / name)
-
-
 def crop_image(path, name, size, filter):
 
     img = Image.open(str(path / (name + '.jpg')))
