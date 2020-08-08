@@ -20,6 +20,10 @@ if __name__ == '__main__':
 
 progresses = []
 
+@app.route('/test')
+def get_recipe_data_json_get():
+
+    return "OK"
 
 @app.route('/get/get_recipe_data_json_get', methods=['GET'])
 def get_recipe_data_json_get():
