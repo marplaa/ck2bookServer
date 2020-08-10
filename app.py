@@ -86,21 +86,32 @@ def soupify(url):
 
 # todo check if images überhaupt vorhanden sind unter bilderübersicht
 def getImages(url):
+    logging.info('retrieving images...')
     url = url.replace("/rezepte/", "/rezepte/bilderuebersicht/")
     http = urllib3.PoolManager()
-    response = http.request('GET', url)
-    soup = BeautifulSoup(response.data, 'html.parser')
-    # print(soup.find("div", {'class': 'recipe-images'}))
-    images = soup.find("div", {'class': 'recipe-images'}).findAll('amp-img')
+
     img_list = []
+    try:
+        logging.info("getting images from url:", url)
+        response = http.request('GET', url)
+
+        soup = BeautifulSoup(response.data, 'html.parser')
+        # print(soup.find("div", {'class': 'recipe-images'}))
+        images = soup.find("div", {'class': 'recipe-images'}).findAll('amp-img')
+        for img in images:
+            image = re.sub(r'/crop-[0-9x]*/', '/crop-960x640/', img.get('src'))
+            img_list.append(image)
+
+    except Exception as ex:
+        logging.error(ex.args)
+
+
+
     # print(images)
 
-    for img in images:
-        image = re.sub(r'/crop-[0-9x]*/', '/crop-960x640/', img.get('src'))
-        print(image)
-        img_list.append(image)
 
-    print(len(img_list))
+
+
     # download_images(img_list)
 
     return img_list
