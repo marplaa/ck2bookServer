@@ -138,14 +138,21 @@ def create_tex_file():
 
     # make_zip(str(directory_path), file_id)
 
-    if compile_latex(directory_path, file_id):
+    ok = compile_latex(directory_path, file_id)
+
+
+    if ok:
+        logging.info('moving pdf file to static...')
         try:
             move(str(directory_path) / Path(file_id + '.pdf'), Path('static/books') / (file_id + '.pdf'))
         except:
             pass
+    else:
+        logging.error('error while compiling texfile')
+
 
     # print(data)
-    return {'url': request.url_root + 'static/books/' + file_id + '.pdf'}
+    return {'ok': ok, 'url': request.url_root + 'static/books/' + file_id + '.pdf'}
 
 
 def compile_latex(directory, file_id):
