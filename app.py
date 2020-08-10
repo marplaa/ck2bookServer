@@ -141,7 +141,7 @@ def create_tex_file():
     ok = compile_latex(directory_path, file_id)
 
 
-    if ok:
+    if True: # ok:
         logging.info('moving pdf file to static...')
         try:
             move(str(directory_path) / Path(file_id + '.pdf'), Path('static/books') / (file_id + '.pdf'))
