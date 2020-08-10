@@ -170,11 +170,15 @@ def make_zip(directory_path, name):
 
 
 def download_images(images, path):
+    logging.info("downloading images to", path)
     for image in images:
         hash = hashlib.md5(bytearray(image['url'], encoding="ascii")).hexdigest()
         orig_name = hash + '.jpg'
-        print('downloading:', image['url'])
-        wget.download(image['url'], out=str(path / orig_name))
+        logging.info('downloading:', image['url'])
+        try:
+            wget.download(image['url'], out=str(path / orig_name))
+        except Exception as ex:
+            logging.error(ex.args)
 
         # iterate through all resolutions per picture
         for size in image['sizes']:
