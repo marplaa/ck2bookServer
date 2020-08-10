@@ -11,19 +11,23 @@ from pathlib import Path
 from zipfile import ZipFile
 from shutil import move
 from PIL import Image, ImageFilter, ImageEnhance
+import logging
 
 app = Flask(__name__)
 
 if __name__ == '__main__':
     app.run()
 
+logging.basicConfig(filename='log.log', level=logging.DEBUG)
+logging.debug('This message should go to the log file')
+logging.info('So should this')
+logging.warning('And this, too')
 
-progresses = []
 
 @app.route('/test')
 def test():
-
     return "OK"
+
 
 @app.route('/get/get_recipe_data_json_get', methods=['GET'])
 def get_recipe_data_json_get():
@@ -129,7 +133,6 @@ def create_tex_file():
         except:
             pass
 
-
     # print(data)
     return {'url': request.url_root + 'static/books/' + file_id + '.pdf'}
 
@@ -137,7 +140,8 @@ def create_tex_file():
 def compile_latex(directory, file_id):
     ok = False
     if not subprocess.run(["pdflatex", '-interaction=nonstopmode', file_id + '.tex'], cwd=str(directory)).returncode:
-        ok = not subprocess.run(["pdflatex", '-interaction=nonstopmode', file_id + '.tex'], cwd=str(directory)).returncode
+        ok = not subprocess.run(["pdflatex", '-interaction=nonstopmode', file_id + '.tex'],
+                                cwd=str(directory)).returncode
 
     return ok
 
@@ -170,7 +174,6 @@ def download_images(images, path):
 
 
 def crop_image(path, name, size, filter):
-
     img = Image.open(str(path / (name + '.jpg')))
     ar_orig = img.size[0] / img.size[1]
     ar_crop = size[0] / size[1]
