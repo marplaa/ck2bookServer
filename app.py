@@ -141,7 +141,7 @@ def create_tex_file():
     ok = compile_latex(directory_path, file_id)
 
 
-    if ok:
+    if True: # ok:
         logging.info('moving pdf file to static...')
         try:
             move(str(directory_path) / Path(file_id + '.pdf'), Path('static/books') / (file_id + '.pdf'))
@@ -157,8 +157,8 @@ def create_tex_file():
 
 def compile_latex(directory, file_id):
     ok = False
-    if not subprocess.run(["/usr/bin/pdflatex", '-interaction=nonstopmode', file_id + '.tex'], cwd=str(directory)).returncode:
-        ok = not subprocess.run(["/usr/bin/pdflatex", '-interaction=nonstopmode', file_id + '.tex'],
+    if not subprocess.run(["/usr/bin/lualatex", file_id + '.tex'], cwd=str(directory)).returncode:
+        ok = not subprocess.run(["/usr/bin/lualatex", file_id + '.tex'],
                                 cwd=str(directory)).returncode
 
     return ok
