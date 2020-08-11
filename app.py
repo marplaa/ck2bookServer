@@ -177,11 +177,11 @@ def make_zip(directory_path, name):
 
 
 def download_images(images, path):
-    logging.info("downloading images to:" + path)
+    logging.info("downloading images to:" + str(path))
     for image in images:
         hash = hashlib.md5(bytearray(image['url'], encoding="ascii")).hexdigest()
         orig_name = hash + '.jpg'
-        logging.info('downloading: ' + image['url'])
+        logging.info('downloading: ' + str(image['url']))
         try:
             wget.download(image['url'], out=str(path / orig_name))
         except Exception as ex:
