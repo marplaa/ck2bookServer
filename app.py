@@ -22,6 +22,13 @@ logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s
 
 logging.info('Starting...')
 
+production = True
+
+if production:
+    production_prefix = '/usr/bin/'
+else:
+    production_prefix = ''
+
 
 
 @app.route('/test')
@@ -158,8 +165,8 @@ def create_tex_file():
 
 def compile_latex(directory, file_id):
     ok = False
-    if not subprocess.run(["/usr/bin/lualatex", file_id + '.tex'], cwd=str(directory)).returncode:
-        ok = not subprocess.run(["/usr/bin/lualatex", file_id + '.tex'],
+    if not subprocess.run([production_prefix + "lualatex", file_id + '.tex'], cwd=str(directory)).returncode:
+        ok = not subprocess.run([production_prefix + "lualatex", file_id + '.tex'],
                                 cwd=str(directory)).returncode
 
     return ok
