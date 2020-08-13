@@ -22,7 +22,7 @@ logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s
 
 logging.info('Starting...')
 
-production = True
+production = False
 
 if production:
     production_prefix = '/usr/bin/'
@@ -38,7 +38,7 @@ def test():
 
 @app.route('/get/get_recipe_data_json_get', methods=['GET'])
 def get_recipe_data_json_get():
-    url = request.args.get('url');
+    url = request.args.get('url')
     print(url)
     recipe_data = get_recipe_data(url)
 
