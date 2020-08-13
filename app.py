@@ -239,6 +239,9 @@ def crop_image(path, name, size, filter):
         elif f == 'color':
             image = ImageEnhance.Color(image).enhance(float(filter[f]))
             filtered = '-f'
+        elif f == 'contrast':
+            image = ImageEnhance.Contrast(image).enhance(float(filter[f]))
+            filtered = '-f'
 
     image.save(str(path / (name + '-' + str(size[0]) + 'x' + str(size[1]) + filtered + '.jpg')))
 
