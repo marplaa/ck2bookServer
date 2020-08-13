@@ -18,7 +18,7 @@ app = Flask(__name__)
 if __name__ == '__main__':
     app.run()
 
-logging.basicConfig(filename='log.log', level=logging.DEBUG)
+logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 
 logging.info('Starting...')
 
@@ -92,7 +92,7 @@ def getImages(url):
 
     img_list = []
     try:
-        logging.info("getting images from url:", url)
+        logging.info("getting images from url: " + url)
         response = http.request('GET', url)
 
         soup = BeautifulSoup(response.data, 'html.parser')
@@ -103,7 +103,8 @@ def getImages(url):
             img_list.append(image)
 
     except Exception as ex:
-        logging.error(ex.args)
+        print(ex.args)
+        logging.error('error while getting images')
 
 
 
