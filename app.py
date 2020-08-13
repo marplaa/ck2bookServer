@@ -22,7 +22,7 @@ logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s
 
 logging.info('Starting...')
 
-production = True
+production = False
 
 if production:
     production_prefix = '/usr/bin/'
