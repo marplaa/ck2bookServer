@@ -9,7 +9,7 @@ from flask import request
 import wget
 from pathlib import Path
 from zipfile import ZipFile
-from shutil import move
+from shutil import move, rmtree
 from PIL import Image, ImageFilter, ImageEnhance
 import logging
 
@@ -22,7 +22,7 @@ logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s
 
 logging.info('Starting...')
 
-production = False
+production = True
 
 if production:
     production_prefix = '/usr/bin/'
@@ -59,7 +59,8 @@ def get_recipe_data(url):
 
     recipe['ingredients'] = makelist(soup.find("table", {"class": "print__ingredients"}))
 
-    recipe['recipe_info'] = makelist(soup.find("table", {'id': 'recipe-info'}).extract())
+    recipe['recipeInfo'] = makelist(soup.find("table", {'id': 'recipe-info'}).extract())
+
     recipe['text'] = re.sub(r'\s+', ' ', content.get_text('</br>', strip=True)).replace('\n', '')
 
     # get images
@@ -152,7 +153,10 @@ def create_tex_file():
     if True: # ok:
         logging.info('moving pdf file to static...')
         try:
-            move(str(directory_path) / Path(file_id + '.pdf'), Path('static/books') / (file_id + '.pdf'))
+            (Path('static/books') / file_id).mkdir()
+            move(directory_path / (file_id + '.pdf'), Path('static/books') / file_id / 'Kochbuch.pdf')
+            if production:
+                rmtree(str(directory_path))
         except:
             pass
     else:
@@ -160,7 +164,7 @@ def create_tex_file():
 
 
     # print(data)
-    return {'ok': ok, 'url': request.url_root + 'static/books/' + file_id + '.pdf'}
+    return {'ok': ok, 'url': request.url_root + 'static/books/' + file_id + '/Kochbuch.pdf'}
 
 
 def compile_latex(directory, file_id):
