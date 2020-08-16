@@ -144,6 +144,7 @@ def create_tex_file():
     f.close()
 
     download_images(data['images'], directory_path / 'images')
+    logging.info("images downloaded")
 
     # make_zip(str(directory_path), file_id)
 
@@ -168,6 +169,7 @@ def create_tex_file():
 
 
 def compile_latex(directory, file_id):
+    logging.info('compiling latex...')
     ok = False
     if not subprocess.run([production_prefix + "lualatex", file_id + '.tex'], cwd=str(directory)).returncode:
         ok = not subprocess.run([production_prefix + "lualatex", file_id + '.tex'],
@@ -209,7 +211,7 @@ def download_images(images, path):
 
 
 def crop_image(path, name, size, filter):
-    logging.info("Cropping image: " + name)
+    logging.info("Cropping image " + name + 'to size ' + size)
 
     img = Image.open(str(path / (name + '.jpg')))
     ar_orig = img.size[0] / img.size[1]
