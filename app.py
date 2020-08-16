@@ -199,7 +199,7 @@ def download_images(images, path):
     for image in images:
         hash = hashlib.md5(bytearray(image['url'], encoding="ascii")).hexdigest()
         orig_name = hash + '.jpg'
-        logging.info('downloading (' + i + ' of ' + str(len(images)) + '): ' + str(image['url']))
+        logging.info('downloading (' + str(i) + ' of ' + str(len(images)) + '): ' + str(image['url']))
         try:
             wget.download(image['url'], out=str(path / orig_name))
         except Exception as ex:
