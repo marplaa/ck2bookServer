@@ -9,7 +9,7 @@ from flask import request
 import wget
 from pathlib import Path
 from zipfile import ZipFile
-from shutil import move, rmtree
+from shutil import copy, move, rmtree
 from PIL import Image, ImageFilter, ImageEnhance
 import logging
 
@@ -197,7 +197,8 @@ def download_images(images, path):
         try:
             wget.download(image['url'], out=str(path / orig_name))
         except Exception as ex:
-            logging.error(ex.args)
+            logging.error("could not download image: " + image['url'])
+            copy(str(Path('static') / 'imagenotfound.jpg'), str(path / orig_name))
 
         # iterate through all resolutions per picture
         for size in image['sizes']:
