@@ -195,10 +195,11 @@ def make_zip(directory_path, name):
 
 def download_images(images, path):
     logging.info("downloading images to:" + str(path))
+    i = 1
     for image in images:
         hash = hashlib.md5(bytearray(image['url'], encoding="ascii")).hexdigest()
         orig_name = hash + '.jpg'
-        logging.info('downloading: ' + str(image['url']))
+        logging.info('downloading (' + i + ' of ' + str(len(images)) + '): ' + str(image['url']))
         try:
             wget.download(image['url'], out=str(path / orig_name))
         except Exception as ex:
@@ -211,6 +212,7 @@ def download_images(images, path):
 
             resolution = int(size['size'].split('x')[0]), int(size['size'].split('x')[1])
             crop_image(path, hash, resolution, size['filter'])
+        i = i + 1
 
 
 def crop_image(path, name, size, filter):
