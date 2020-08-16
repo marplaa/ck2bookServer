@@ -211,7 +211,7 @@ def download_images(images, path):
 
 
 def crop_image(path, name, size, filter):
-    logging.info("Cropping image " + name + 'to size ' + str(size[0]) + 'x' + str(size[1]))
+    logging.info("Cropping image " + name + ' to size ' + str(size[0]) + 'x' + str(size[1]))
 
     img = Image.open(str(path / (name + '.jpg')))
     ar_orig = img.size[0] / img.size[1]
