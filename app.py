@@ -209,6 +209,8 @@ def download_images(images, path):
 
 
 def crop_image(path, name, size, filter):
+    logging.info("Cropping image: " + name)
+
     img = Image.open(str(path / (name + '.jpg')))
     ar_orig = img.size[0] / img.size[1]
     ar_crop = size[0] / size[1]
@@ -216,12 +218,10 @@ def crop_image(path, name, size, filter):
     # orig_width = crop_width
     if ar_orig < ar_crop:
         crop_height = int(img.size[0] / ar_crop)
-        print(img.size[0], ' ', crop_height)
         upper_left = int((img.size[1] - crop_height) / 2)
         box = (0, upper_left, img.size[0], crop_height + upper_left)
     else:
         crop_width = int(img.size[1] * ar_crop)
-        print(img.size[0], ' ', crop_width)
         upper_left = int((img.size[0] - crop_width) / 2)
         box = (upper_left, 0, crop_width + upper_left, img.size[1])
 
