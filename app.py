@@ -128,6 +128,7 @@ def getImages(url):
 
 @app.route('/compile/toPdf', methods=['POST'])
 def create_tex_file():
+    logging.info("creating tex file")
     data = request.get_json()
     file_id = hashlib.md5(bytearray(data['content'], encoding="utf-8")).hexdigest()
     directory_path = Path('temp') / Path(file_id)
@@ -135,13 +136,15 @@ def create_tex_file():
     try:
         directory_path.mkdir()
         (directory_path / 'images').mkdir()
+    except:
+        logging.error("Error while mkdir " + str(directory_path))
 
-    except FileExistsError:
-        pass
-
-    f = open(directory_path / (file_id + '.tex'), "w", encoding='utf-8')
-    f.write(data['content'])
-    f.close()
+    try:
+        f = open(directory_path / (file_id + '.tex'), "w", encoding='utf-8')
+        f.write(data['content'])
+        f.close()
+    except:
+        logging.error("Error while writing tex tile")
 
     download_images(data['images'], directory_path / 'images')
     logging.info("images downloaded")
